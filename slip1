@@ -1,0 +1,126 @@
+[root@localhost RDBMS]# su postgres
+bash-4.4$ createdb slip1_db;
+bash-4.4$ psql slip1_db;
+slip1_db=# create table student(rno int primary key,name varchar(20),add varchar(30),class varchar(30));
+CREATE TABLE
+
+slip1_db=# create table subject(scode int primary key,sname varchar(20));
+CREATE TABLE
+
+slip1_db=# create table stud_sub(rno int references student(rno),scode int references subject(scode),marks int);
+CREATE TABLE
+
+slip1_db=# insert into student values(1,'nita','chinchwad','fy');
+INSERT 0 1
+slip1_db=# insert into student values(2,'ram','chinchwad','fy');
+INSERT 0 1
+slip1_db=# insert into student values(3,'meena','pimpri','sy');
+INSERT 0 1
+slip1_db=# insert into student values(4,'meera','pimpri','ty');
+INSERT 0 1
+slip1_db=# insert into student values(5,'naina','nigdi','sy');
+INSERT 0 1
+slip1_db=# select * from student;
+ rno | name  |    add    | class 
+-----+-------+-----------+-------
+   1 | nita  | chinchwad | fy
+   2 | ram   | chinchwad | fy
+   3 | meena | pimpri    | sy
+   4 | meera | pimpri    | ty
+   5 | naina | nigdi     | sy
+(5 rows)
+
+slip1_db=# insert into subject values(101,'RDBMS');
+INSERT 0 1
+slip1_db=# insert into subject values(102,'C');
+INSERT 0 1
+slip1_db=# insert into subject values(103,'DS');
+INSERT 0 1
+slip1_db=# insert into subject values(104,'TCS');
+INSERT 0 1
+slip1_db=# insert into subject values(105,'CC');
+INSERT 0 1
+slip1_db=# select * from subject;
+ scode | sname 
+-------+-------
+   101 | RDBMS
+   102 | C
+   103 | DS
+   104 | TCS
+   105 | CC
+(5 rows)
+
+slip1_db=# insert into stud_sub values(1,101,60);
+INSERT 0 1
+slip1_db=# insert into stud_sub values(2,101,80);
+INSERT 0 1
+slip1_db=# insert into stud_sub values(3,102,80);
+INSERT 0 1
+slip1_db=# insert into stud_sub values(1,102,70);
+INSERT 0 1
+slip1_db=# insert into stud_sub values(3,102,70);
+INSERT 0 1
+slip1_db=# insert into stud_sub values(4,104,70);
+INSERT 0 1
+slip1_db=# insert into stud_sub values(5,105,40);
+INSERT 0 1
+slip1_db=# insert into stud_sub values(5,101,60);
+INSERT 0 1
+slip1_db=# select * from stud_sub;
+ rno | scode | marks 
+-----+-------+-------
+   1 |   101 |    60
+   2 |   101 |    80
+   3 |   102 |    80
+   1 |   102 |    70
+   3 |   102 |    70
+   4 |   104 |    70
+   5 |   105 |    40
+   5 |   101 |    60
+(8 rows)
+
+Q2:
+create or replace function info(text) returns text as'
+declare
+rn int;
+nm text;
+m int;
+c1 cursor for select student.rno,name,marks from student,subject,stud_sub where student.rno=stud_sub.rno and 
+subject.scode=stud_sub.scode and sname=$1;
+begin
+open c1;
+loop
+fetch c1 into rn,nm,m;
+exit when not found;
+raise notice''% % %'',rn,nm,m;
+end loop;
+close c1;
+return null;
+end;'
+language 'plpgsql';
+
+Q3.
+create or replace function f_t() returns opaque as'
+begin
+if(new.marks<0) then
+raise exception''Marks Scored should be grater than 0'';
+end if;
+return new;
+end;'
+language 'plpgsql';
+
+create trigger t_f before insert on stud_sub 
+for each row
+execute  procedure f_t();
+
+Q1
+create or replace function stud_details(int) returns text as'
+declare
+r student%rowtype;
+begin
+select * into r from student where rno=$1;
+raise notice ''% % % %'',r.rno,r.name,r.add,r.class;
+return null;
+end;'
+language 'plpgsql';
+

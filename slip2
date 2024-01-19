@@ -1,0 +1,107 @@
+bash-4.4$ createdb slip2;
+bash-4.4$ psql slip2;
+
+slip2=# create table bus(bno int primary key,cap int,dname varchar(30));
+CREATE TABLE
+slip2=# create table route(rno int,source varchar(30),dest varchar(30),ns int);
+CREATE TABLE
+slip2=# create table route1(rno int primary key,source varchar(30),dest varchar(30),ns int);
+CREATE TABLE
+slip2=# create table bus_route(bno int references bus(bno),rno int references route1(rno));
+CREATE TABLE
+slip2=# insert into bus values(1,20,'chinchwad');
+INSERT 0 1
+slip2=# insert into bus values(2,17,'deccan');
+INSERT 0 1
+slip2=# insert into bus values(3,40,'kothrud');
+INSERT 0 1
+slip2=# insert into route1 values(101,'pimpri','aundh',6);
+INSERT 0 1
+slip2=# insert into route1 values(102,'bhosari','nigdi',5);
+INSERT 0 1
+slip2=# insert into route1 values(103,'kothrud','chinchwad',9);
+INSERT 0 1
+slip2=# insert into bus_route values(1,101)
+slip2-# ;
+INSERT 0 1
+slip2=# insert into bus_route values(2,102);
+INSERT 0 1
+slip2=# insert into bus_route values(2,103);
+INSERT 0 1
+slip2=# insert into bus_route values(3,101);
+INSERT 0 1
+slip2=# insert into bus_route values(1,103);
+INSERT 0 1
+slip2=# select * from bus;
+ bno | cap |   dname   
+-----+-----+-----------
+   1 |  20 | chinchwad
+   2 |  17 | deccan
+   3 |  40 | kothrud
+(3 rows)
+
+slip2=# select * from route1;
+ rno | source  |   dest    | ns 
+-----+---------+-----------+----
+ 101 | pimpri  | aundh     |  6
+ 102 | bhosari | nigdi     |  5
+ 103 | kothrud | chinchwad |  9
+(3 rows)
+
+slip2=# select * from bus_route;
+ bno | rno 
+-----+-----
+   1 | 101
+   2 | 102
+   2 | 103
+   3 | 101
+   1 | 103
+(5 rows)
+
+i. Write a stored function which will accept the route_no from the user and print all the details of that route.
+create or replace function route_details(int) returns text as'
+declare
+r student%rowtype;
+begin
+select * into r from student where rno=$1;
+raise notice ''% % % %'',r.source,r.dest,r.ns;
+return null;
+end;'
+language 'plpgsql';
+
+ii. Write a trigger which will be executed every time insertion is made to the Route table. If No_of_stations is less than 2 then do not allow the insertion and display appropriate messages.
+create or replace function NOS_fun()
+returns opaque as'
+begin 
+if (new.no_of_stations<2) then
+raise exception ‘ ‘No.of station  should be greater than 2’ ‘;
+end if;
+return new;
+end;'
+language 'plpgsql';
+
+create trigger trig_NOS
+before insert on route for each row
+execute procedure marks_fun();
+
+
+iii. Write a stored function using a cursor, which will give details of all routes on which bus no 110 is running.
+create or replace function route_details()
+returns text as'
+declare
+rno int;
+source text;
+destination text;
+ns int;
+c1 cursor for select route_no,source,destination,no_of_stations from route,bus,route_bus route.route_no=route_bus.route_no and bus.bus_no=route_bus.bus_no and bus_no=110;
+begin
+open c1;
+loop
+fetch c1 into rno,source,destination,ns;
+exit when not found;
+raise notice ''% %  %  %'',rno,source,destination,no_of_stations;
+end loop;
+close c1;
+return null;
+end;'
+language 'plpgsql';
