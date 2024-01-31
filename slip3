@@ -1,0 +1,98 @@
+bash-4.4$ createdb slip3_db;
+could not change directory to "/root": Permission denied
+bash-4.4$ psql slip3_db;
+could not change directory to "/root": Permission denied
+psql (12.9)
+Type "help" for help.
+
+slip3_db=# create table hospital(hni int primary key,hname varchar(20),city varchar(20));
+CREATE TABLE
+
+slip3_db=# create table doctor(dno int primary key,dname varchar(20),spec varchar(30),charges int,hni int references hospital(hni));
+CREATE TABLE
+
+slip3_db=# insert into hospital values(101,'Aditya Birla','chinchwad');
+INSERT 0 1
+slip3_db=# insert into hospital values(102,'Jahangir','Pune');
+INSERT 0 1
+slip3_db=# insert into hospital values(103,'Sahyadri','kothrud');
+INSERT 0 1
+
+lip3_db=# insert into doctor values(1,'Dr.Hiremath','Heart',2000,101);
+INSERT 0 1
+slip3_db=# insert into doctor values(2,'Dr.Hiremath','Heart',2000,102);
+INSERT 0 1
+slip3_db=# insert into doctor values(3,'Dr.Panda','gynac',3000,101);
+INSERT 0 1
+slip3_db=# insert into doctor values(4,'Dr.Manisha','gynac',2000,103);
+INSERT 0 1
+slip3_db=# insert into doctor values(5,'Dr.seema','ortho',2000,103);
+INSERT 0 1
+slip3_db=# 
+slip3_db=# select * from hospital;
+ hni |    hname     |   city    
+-----+--------------+-----------
+ 101 | Aditya Birla | chinchwad
+ 102 | Jahangir     | Pune
+ 103 | Sahyadri     | kothrud
+(3 rows)
+
+slip3_db=# select * from doctor;
+ dno |    dname    | spec  | charges | hni 
+-----+-------------+-------+---------+-----
+   1 | Dr.Hiremath | Heart |    2000 | 101
+   2 | Dr.Hiremath | Heart |    2000 | 102
+   3 | Dr.Panda    | gynac |    3000 | 101
+   4 | Dr.Manisha  | gynac |    2000 | 103
+   5 | Dr.seema    | ortho |    2000 | 103
+(5 rows)
+*******************************************************
+i.Write a trigger before insert/update on Doctor table. Raise
+exception if charges are <0 .
+
+create or relace function tri_doc() returns opaque as'
+begin
+if(new.charges<0)then
+raise exception''Charges should be greter than 0'';
+end if;
+return new;
+end;'
+language 'plpgsql';
+
+create or replace trigger doc_t before insert or update on doctor
+for each row
+execute procedure tri_doc();
+
+**********************************************************
+
+ii.Write a function which will accept the name of the doctor and print the hospital details that the doctor is visiting.
+
+create or replace function hos_details(text) returns text as'
+declare
+h hospital%rowtype;
+begin
+select * into h from hospital,doctor where hospital.hni=doctor.hni and dname=$1;
+raise notice''% % %'',r.hni,r.hname,r.city;
+return null;
+end;
+language 'plpgsql';
+
+****************************************************
+iii.Write a function using cursor to accept the city name and print the names of all hospitals in that city.
+
+Create or replace function f_hos(text) returns text as’
+declare
+r text;
+C1 cursor for select h_name from hospital where city=$1;
+begin
+Open c1;
+loop
+fetch c1 into r;
+raise notice ‘ ‘ % ‘ ‘,r;
+exit when not found;
+end loop;
+close c1;
+return null;
+end;’
+language ‘plpgsql’;
+************************************************************
