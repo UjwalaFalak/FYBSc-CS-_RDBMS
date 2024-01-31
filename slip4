@@ -4,6 +4,9 @@ Movie and actors are related with many to many relationships.
 
 Q 2) A Create the above database in PostGreSQL and insert sufficient records.
 
+createdb slip4;
+psql slip4;
+
 create table Movie (m_name varchar(25) PRIMARY KEY,Release_year int,Budget
 Money);
 CREATE TABLE
