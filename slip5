@@ -74,7 +74,7 @@ r customer%rowtype;
 c1 cursor for select * from customer where cname=$1;
 begin
 open c1;
-if()then
+if found then
 loop
 fetch c1 into r;
 exit when not found;
