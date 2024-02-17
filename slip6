@@ -1,0 +1,99 @@
+create table movies(m_name varchar(25) primary key,release_year int,budget money);
+
+insert into movies values('Aatma',2013,93000);
+
+select * from movies;
+   m_name    | release_year | budget 
+------------+-------------+-------
+ Aatma      |         2013 |  93000
+ Alone      |         2015 |  86000
+ kick       |         2014 | 150000
+ bhoothnath |         2014 | 150000
+
+create table producer(p_id int primary key,name char(30),padd varchar(30));
+insert into producer values(1,'karan','mumbai');
+INSERT 0 1
+
+movie=# select* from mo_ac;
+   m_name   |             a_name             
+------------+---------------------------
+ Alone      | karan                         
+ kick       | salman                        
+ kick       | karan                         
+ bhoothnath | amitabh                       
+ kick       | amitabh            
+
+create table prod_mo(m_name varchar(25) references movies(m_name),p_id int references producer(p_id));
+
+insert into prod_mo values('Alone',3);
+INSERT 0 1
+movie=#  select * from prod_mo;
+ m_name | p_id 
+--------+-----
+ Alone  |    3
+ Alone  |    1
+ kick   |    1
+ kick   |    3
+
+i. Write a stored function which accepts the producer name and prints the number of movies produced by him.
+CREATE OR REPLACE FUNCTION fun(in_pname text)
+RETURNS text AS $$
+DECLARE
+    cnt INT;
+    n INT;
+    c1 CURSOR FOR
+        SELECT COUNT(m_name) FROM movie, producer, m_p
+        WHERE movie.mname = m_p.mname AND producer.p_id = m_p.p_id AND pname = in_pname;
+BEGIN
+    OPEN c1;
+    FETCH c1 INTO cnt;
+    CLOSE c1;
+
+    IF cnt = 0 THEN
+        RAISE EXCEPTION 'Producer is invalid';
+    ELSE
+        RAISE NOTICE '% movies produced by %', cnt, in_pname;
+    END IF;
+
+    RETURN NULL;
+END;
+LANGUAGE plpgsql;
+
+
+
+O/P: select movie_nm('karan');
+
+ii. Write a stored function using a cursor, which will accept the movie name and print the names of all producers who have produced that movie.
+create or replace function movie_nm(text) returns text as'
+declare 
+pn text;
+c1 cursor for select pname from movie,producer,m_p where movie.mno=m_p,mno and producer.pid=m_p.pid and mname=$1;
+Begin
+For pname in c1
+loop
+Raise notice’’%’’,pn;
+End loop;
+Return null;
+End;’
+Language ‘plpgsql’;
+
+
+
+iii. Write a trigger which will be executed whenever insertion is made to the movie table. If the budget is less than 1,00,000 do not allow the insertion. Give appropriate messages.
+
+create or replace function mbudget()
+returns opaque as'
+begin 
+if (new.budget <100000::money) then
+raise exception ‘’budget is less than 1,00,000 do not allow the insertion’’;
+end if;
+return new;
+end;'
+language 'plpgsql';
+
+
+create trigger trig_mbud
+before insert on movies for each row
+execute procedure lamt ();
+
+O/P: insert into movies values(‘KKHT’,1998,90000);
