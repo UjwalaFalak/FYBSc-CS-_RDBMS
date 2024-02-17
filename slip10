@@ -1,0 +1,44 @@
+slip no 10/slip 1 database is same
+
+Q1.
+create or replace function stud_details(text) returns text as'
+declare
+r student%rowtype;
+begin
+select * into r from student where name=$1;
+raise notice ''% % % %'',r.rno,r.name,r.add,r.class;
+return null;
+end;'
+language 'plpgsql';
+
+Q2.
+create or replace function info(text) returns text as'
+declare
+nm text;
+c1 cursor for select name from student,subject,stud_sub where student.rno=stud_sub.rno and 
+subject.scode=stud_sub.scode and sname=$1;
+begin
+open c1;
+loop
+fetch c1 into nm;
+exit when not found;
+raise notice''%'',nm;
+end loop;
+close c1;
+return null;
+end;'
+language 'plpgsql';
+
+Q3:
+create or replace function f_t1() returns opaque as'
+begin
+if(new.add=''nigdi'') then
+raise exception''Not allowed to delete the record of pune'';
+end if;
+return new;
+end;'
+language 'plpgsql';
+
+create trigger t_f before delete on student 
+for each row
+execute  procedure f_t1();
