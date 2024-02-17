@@ -1,0 +1,104 @@
+[root@localhost ~]# su postgres
+bash-4.4$ createdb slip5_db;
+could not change directory to "/root": Permission denied
+bash-4.4$ psql slip5_db;
+could not change directory to "/root": Permission denied
+psql (12.9)
+Type "help" for help.
+
+slip5_db=# create table customer(cno int primary key,cname varchar(20),city varchar(20));
+CREATE TABLE
+
+slip5_db=# create table account(ano int primary key,atype varchar(30),adate date,balance money,cno int references customer(cno));
+CREATE TABLE
+
+slip5_db=# insert into customer values(1,'ram','pune');
+INSERT 0 1
+slip5_db=# insert into customer values(2,'meena','pimpri');
+INSERT 0 1
+slip5_db=# insert into customer values(3,'naina','chinchwad');
+INSERT 0 1
+slip5_db=# insert into customer values(4,'shyam','pimpri');
+INSERT 0 1
+slip5_db=# insert into customer values(5,'nita','aundh');
+INSERT 0 1
+                    
+slip5_db=# insert into account values(101,'saving','2/4/2017','$20000',1);
+INSERT 0 1
+slip5_db=# insert into account values(102,'saving','7/2/2015','$40000',1);
+INSERT 0 1
+slip5_db=# insert into account values(103,'current','12/8/2012','$450000',2);
+INSERT 0 1
+slip5_db=# insert into account values(104,'current','12/8/2012','$450000',3);
+INSERT 0 1
+slip5_db=# insert into account values(105,'current','1/8/2018','$450000',4);
+INSERT 0 1
+slip5_db=# insert into account values(106,'saving','1/9/2013','$30000',4);
+INSERT 0 1
+slip5_db=# select * from customer;
+ cno | cname |   city    
+-----+-------+-----------
+   1 | ram   | pune
+   2 | meena | pimpri
+   3 | naina | chinchwad
+   4 | shyam | pimpri
+   5 | nita  | aundh
+(5 rows)
+
+slip5_db=# select * from account;
+ ano |  atype  |   adate    |   balance   | cno 
+-----+---------+------------+-------------+-----
+ 101 | saving  | 2017-02-04 |  $20,000.00 |   1
+ 102 | saving  | 2015-07-02 |  $40,000.00 |   1
+ 103 | current | 2012-12-08 | $450,000.00 |   2
+ 104 | current | 2012-12-08 | $450,000.00 |   3
+ 105 | current | 2018-01-08 | $450,000.00 |   4
+ 106 | saving  | 2013-01-09 |  $30,000.00 |   4
+(6 rows)
+
+
+create or replace function acc_details(int) returns text as'
+declare 
+r account%rowtype;
+begin
+select * into r from account where ano=$1;
+raise notice''% % % % %'',r.ano,r.atype,r.adate,r.balance,r.cno;
+return null;
+end;'
+language 'plpgsql';
+
+
+create or replace function cust_info(text) returns text as'
+declare 
+r customer%rowtype;
+c1 cursor for select * from customer where cname=$1;
+begin
+open c1;
+if()then
+loop
+fetch c1 into r;
+exit when not found;
+raise notice''% % %'',r.cno,r.cname,r.city;
+end loop;
+else
+raise notice''Invalid Customer'';
+end if;
+close c1;
+return null;
+end;'
+language 'plpgsql';
+
+
+
+create or replace function f_t() returns opaque as'
+begin
+if(new.balance<1000::money)then
+raise exception''Balance should be greater than or equal to 1000'';
+end if;
+return new;
+end;'
+language'plpgsql';
+
+create trigger t_f before update on account
+for each row
+execute procedure f_t();
