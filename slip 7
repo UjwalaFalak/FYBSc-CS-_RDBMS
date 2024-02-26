@@ -1,0 +1,46 @@
+create table Project(p_no int primary key, p_name varchar (25), start_date date, status varchar(10));
+
+create table Employee (e_no int unique , e_name varchar(30), age int, date_of_joining date,p_no int references Project(p_no));
+
+
+i. Write a function which accepts employee name and prints the details of the project which the employee works on.
+Create or replace function f_e(text) returns text as’
+Declare
+r project%rowtype;
+begin
+select * into r from project,employee where project.pno=employee.pno and ename=$1;
+raise notice’’% % % %’’,r.pno,r.pname,r.sdate,r.status;
+end loop;
+return null;
+end;’
+language ‘plpgsql’;
+
+ii. Write a trigger which will be executed whenever insertion is made to the employee table, if age is less than 21, insertion should not be allowed.
+Create or replace function f_t() returns opaque as’
+Begin
+if (new.age<21)then
+Raise exception’’Employee age should be greater than 21’’;
+End if;
+Return null;
+End;’
+Language ‘plpgsql’;
+
+Create trigger tri 
+before insert on employee
+For each row
+execute procedure f_t();
+
+
+iii. Write a function using a cursor which will accept the project name and display the names of employees working on that project.
+create or replace function f_details(text) returns text as’
+declare
+nm text;
+c1 cursor for select ename from employee,project where project.pno=employee.pno and pname=$1;
+begin
+for nm in c1
+loop
+raise notice’’%d’’,nm;
+End loop;
+End;’
+language ‘plpgsql’;
+
