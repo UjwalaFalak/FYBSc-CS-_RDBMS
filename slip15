@@ -1,0 +1,41 @@
+Consider the following Department-employee database. 
+Department (dno integer, dname varchar(20),city varchar(20)) 
+Employee (eno integer, ename varchar(20), salary money) 
+Department and Employee are related with a one to many relationship 
+i. Write a function to accept department name and display the average salary of employees in that department. 
+create or replace function fun1(text) returns text as’
+declare
+a float;
+begin
+select avg(sal) into a from emp,dept where dept.dno=emp.dno and dname=$1;
+raise notice’’%’’,a;
+return null;
+end;’
+language ‘plpgsql’;
+
+ii. Write a cursor to display the names of employees who works in “HR” department. 
+create or replace function fun() returns text as’
+declare
+dn text;
+c1 cursor for select ename from dept,emp where dept.dno=emp.dno and dname=’’hr’’;
+begin
+for dn in c1
+loop
+raise notice’’%’’,dn;
+end loop;
+return null;
+end;’
+language ‘plpgsql’;
+
+iii. Write a trigger before updating an employee record in the Employee table. Raise a notice and display the message 
+“Employee record is being updated”. 
+create or replace function f_t() opaque as’
+begin
+raise exception’’employee record is being updated’’;
+end;’
+language ‘plpgsql’;
+
+create trigger tri
+before update on emp 
+for each row
+execute procedure f_t();
