@@ -1,0 +1,44 @@
+Consider the following Item-Supplier database 
+Item(itemno integer, itemname varchar(20)) 
+Supplier(supplier_no integer, supplier_name varchar(20), city varchar(20)) 
+Item-Supplier: M-M relationship with rate(money) and quantity (integer) as descriptive attributes
+i. Write a function to accept the city name as input and returns the number of suppliers living in that city. 
+create or replace function count_supp(text)
+returns int as'
+declare 
+city alias for $1;
+cnt integer;
+begin
+select  into cnt count(*) from supplier where city=city;
+return cnt;
+end;'
+language 'plpgsql';
+
+ii. Write a cursor to display the names of items whose rate is more than 500. 
+create or replace function fun() returns text as’
+declare
+inm text;
+c1 cursor for select iname from item where rate>500;
+begin
+for inm in c1
+loop
+raise notice’’%’’,inm;
+end loop
+return null;
+end;’
+language ‘plpgsql’;
+
+iii. Write a trigger before insert or update on rate field. If the rate is less than 50 then raise the appropriate exception. 
+create or replace function tr_fun()
+returns opaque as'
+begin
+if(:new.rate<=50) then
+raise exception''rate  should not  be less  than fifty'';
+end if;
+end;’
+language 'plpgsql';
+
+create trigger trig_fg
+before insert or update on its 
+for each row
+execute procedure tr_fun();
