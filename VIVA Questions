@@ -1,0 +1,79 @@
+*********************C Language**********************
+what is macro?
+what is union?
+what is preprocessor?
+what is user defined data types?
+how we decalre and define macro?
+which header file wwe need to include if we use any predefined mathematical function.
+which header file need to include if we used string function?
+what is pointer?
+how we declare pointer?
+which type of value pointer hold?
+what is structure?
+how we access member of structure?
+what is command line argument?
+how many arguments are ther4e in command line argument?
+what is argv and argc?what type of value we store in it?
+what is file handling?
+whaich are the mode of file opening?
+how we open file?which function used to open file?
+what is string?
+String function purpose and syntax:strlen,strstr,strcmp etc
+which function we use copy one string into another?
+which function we use to compare two strings?
+which function we use to concatenate two string?
+which function we use to covert lowercase to uppercase and vice versa.
+what is dynamic memeory allocation?
+what is the advantage of dynamic memory alocation?
+which functions we use for dynamic memory allocation?
+what is the difference between malloc and calloc?
+syntax of malloc?
+
+
+***************************RDBMS************************
+What is the Fullform of RDBMS?
+What is trigger?
+What is cursor?
+what are types of cursor?
+What are the attributes of cursor?
+Purpose of each cursor attribute.
+how we decalre cursor>
+where we declare cursor?
+What is function?
+What is Stored procedure?
+What is the diffrence between function and procedure?
+what is one to one relationship and how we implement?
+what is one to many relationship and how we implement?
+what is many to many relationship and how we implement?
+what is many to one relationship and how we implement?
+what are the acid properties of transaction?
+what is transaction?
+states of transaction?
+what is deadlock?
+What is lock based protocol?
+What is serial schedule?
+What is non serial schedule?
+what is failure?
+Types of failure?
+which methods we used to recover database?
+what is shadow paging?
+what are the problem occure in non serial schedule?
+what is serializability?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
