@@ -1,0 +1,22 @@
+Consider the following database 
+Project (pno int, pname char (30), ptype char (20), duration int) 
+Employee (eno int, ename char (20), salary float, joining_date date) 
+Relationship between Project and Employee is many to many with descriptive attribute 
+start_date. 
+create table PROJECT(PNO INTEGER primary key, P_NAME CHAR(30), PTYPE CHAR(20),DURATION INTEGER);
+
+insert into project values (101, 'banking','application',3);
+
+create table EMPLOYEE(ENO INTEGER primary key,E_NAME CHAR (20),salary money,JOINDATE DATE);
+
+insert into employee values(2000,'Amar','30000','2/10/2010');
+
+create table proj_emp(pno integer references project(pno),eno integer references employee (eno),start_date date);
+
+insert into proj_emp values(101,2000,'05/30/2012');
+
+i. Write a cursor to accept the employee name as an input parameter and displays the names of projects of that employee. 
+
+ii. Write a stored function to count all employees who have joined before ‘01/02/2010’. 
+
+iii. Write a trigger which ensures that if an employee's salary entered less than zero, the trigger gets fired. 
