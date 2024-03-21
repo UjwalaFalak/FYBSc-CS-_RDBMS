@@ -1,0 +1,32 @@
+Consider the followingr Department-employee database. 
+Department (dno integer, dname varchar(20),city varchar(20)) 
+Employee (eno integer, ename varchar(20), salary money) 
+Department and Employee are related with a one to many relationship 
+i. Write a function to accept department city as input and returns the total number of departments in that city. 
+create or replace function f_no(text) returns text as'
+declare
+cnt int;
+begin
+select count(*) into cnt from dept where city=$1;
+return cnt;
+end;’
+language ‘plpgsql’;
+ 
+ii. Write a cursor to display the department-wise names of employees whose salary is between 50000 and 70000. 
+
+
+iii. Write a trigger before inserting an employee record in the Employee table. Raise an exception if salary < 0. 
+create or replace function e_fun()
+returns opaque as'
+begin
+if(new.salary<=0::money) then
+raise exception''salary of employee  should be greater than zero'';
+end if;
+return new;
+end;'
+language 'plpgsql';
+
+create trigger trig_emp
+before insert on emp
+for each row
+execute procedure e_fun();
