@@ -1,0 +1,25 @@
+Consider the following database 
+Student (Roll_No int, Sname varchar (20), Sclass char (10)) 
+Teacher (T_No int, Tname char (20), Experience int) 
+The Student and Teacher are related with many to many relationship with the descriptive 
+attribute Subject. 
+i. Write a trigger before inserting the teacher record into a teacher table. Experience should be a minimum of 4 years. If it is less than 4 
+years trigger gets fired and displays an appropriate message. 
+create or replace function exp()
+returns opaque as'
+begin 
+if (new.experience < 4 ) then
+raise exception ''Teachers experience should be minimum 4 years'';
+end if;
+return new;
+end;'
+language 'plpgsql';
+
+create trigger trig_exp
+before insert or update on teacher
+for each row
+execute procedure exp ();
+
+ii. Write a cursor to accept the student name from the user as an input and give list of subjects taken by the student. 
+
+iii. Write a stored function to find the details of the maximum experienced teacher. 
