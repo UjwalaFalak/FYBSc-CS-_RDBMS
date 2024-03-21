@@ -1,0 +1,75 @@
+slip9:
+
+Item (itemno integer, itemname varchar(20))
+Supplier(supplier_no integer, supplier_name varchar(20),city varchar(20))
+Item-Supplier: M-M relationship with rate(money) and quantity (integer) as descriptive attributes.
+
+create table item(ino int primary key,iname varchar(30));
+
+create table supp(sno int primary key,sname varchar(30),city varchar(30));
+
+create table i_s(ino int references item(ino),sno int references supp(sno),rate money,quantity int);
+
+insert into item values(1,'Monitor');
+insert into item values(2,'Mouse');
+insert into item values(3,'Keyboard');
+insert into item values(4,'CPU');
+
+insert into supp values(101,'manu','pune');
+insert into supp values(102,'ram','chinchwad');
+insert into supp values(103,'anu','pimpri');
+insert into supp values(104,'patil','bhosari');
+
+insert into i_s values(1,102,'$20000',10);
+insert into i_s values(1,101,'$18000',12);
+insert into i_s values(2,103,'$1000',17);
+insert into i_s values(4,104,'$10000',14);
+insert into i_s values(3,104,'$4000',50);
+insert into i_s values(2,103,'$2000',40);
+
+
+i.Write a function to display the item name with maximum
+quantity.
+
+create or replace function i_f() returns text as'
+declare
+inm text;
+begin
+select iname into inm from item,supp,i_s where
+item.ino=i_s.ino and supp.sno=i_s.sno and  quantity=(select max(quantity) from i_s);
+raise notice ''%'',inm;
+return null;
+end;'
+language 'plpgsql';
+
+ii.Write a cursor to display the names of suppliers in ‘Pune’ city.
+create or replace function f_c() returns text as'
+declare
+nm text;
+c1 cursor for select sname from supp where city=''pune'';
+begin
+open c1;
+loop
+fetch c1 into nm;
+exit when not found;
+raise notice''%'',nm;
+end loop;
+close c1;
+return null;
+end;'
+language 'plpgsql';
+
+iii.Write a trigger before insert or update on rate field. If the rate is less than or equal to zero then raise appropriate exception.
+
+create or replace function f_t() returns opaque as'
+begin
+if(new.rate<=money::0)then 
+raise exception''Rate should be greater than 0'';
+end if;
+return new;
+end;'
+language 'plpgsql';
+
+create trigger t_f before insert or update on i_s
+for each row
+execute procedure f_t();
