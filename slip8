@@ -1,0 +1,28 @@
+create or replace function s_t(text) returns text as'
+declare
+nm text;
+c1 cursor for select tname from teacher,subject,t_s where teacher.tno=t_s.tno and subject.sno=t_s.sno and sname=$1;
+begin
+open c1;
+loop
+fetch c1 into nm;
+exit when not found;
+raise notice''%'',nm;
+end loop;
+close c1;
+return null;
+end;'
+language 'plpgsql';
+******************************************************
+create or replace function t_f() returns opaque as'
+begin
+if(new.age<21)then
+raise exception''Teacher age should be greater than 21'';
+end if;
+return new;
+end;'
+language 'plpgsql';
+
+create trigger t_f before insert or update on teacher 
+for each row
+execute procedure t_f();
