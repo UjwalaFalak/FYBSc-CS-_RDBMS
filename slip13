@@ -1,0 +1,47 @@
+Consider the following Project-Employee database 
+Project (pno integer, pname varchar (30), ptype varchar (20), duration integer) 
+Employee (eno integer, ename varchar(20), qualification varchar(15), salary float, joining_date date) 
+Relationship between Project and Employee is many to many with descriptive attribute start_date, 
+no_of_hours_worked. 
+i. Write a function to accept project name as input and returns the number of employees working on the project. 
+create or replace function fun1(text) returns text as’
+declare
+cnt int;
+begin
+select count(*) into cnt from emp,proj,emp_proj where project.pno=emp_proj.pno and emp.eno=emp_proj.eno and pname=$1;
+return cnt;
+end;’
+language ‘plpgsql’;
+
+ii. Write a cursor to display all projects having duration > ____. 
+create or replace function f() returns text as’
+declare
+dn text;
+c1 cursor for select pname from project, where duration>4;
+begin
+for dn in c1
+loop
+raise notice’’%’’,dn;
+end loop;
+return null;
+end;’
+language ‘plpgsql’;
+
+
+iii. Write a trigger before insert or update on no_of_hours field. If the no_of_hours_worked is less than zero then raise an exception and 
+display the appropriate message. 
+create or replace function pro_emp()
+returns opaque as'
+begin
+if(new.no_of_hours_worked<=0) then
+raise exception''no of hours worked should be greater than zero'';
+end if;
+return new;
+end;'
+language 'plpgsql';
+
+create trigger trig_pro_emp
+before insert or update on proj_emp
+for each row
+execute procedure pro_emp();
+
