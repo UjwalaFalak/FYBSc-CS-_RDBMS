@@ -1,0 +1,58 @@
+Customer (cno integer, cname varchar(20), city varchar(20)) 
+Account (accno integer, acc_type varchar(10), opening_date date, balance money) 
+Customer and Account are related with a one to many relationship 
+
+create table customer(cno int primary key,cname varchar(20),city varchar(30));
+insert into customer values(1,'ram','pune');
+insert into customer values(2,'mita','pimpri');
+insert into customer values(3,'rita','chinchwad');
+insert into customer values(4,'maya','bhosari');
+insert into customer values(5,'raghu','pune');
+
+create table account(ano int primary key,atype varchar(30),odate date,balance money,cno int references customer(cno));
+insert into account values(101,'saving','2/23/2014','$200000',1);
+insert into account values(102,'current','7/2/2019','$2000',1);
+insert into account values(103,'saving','2/23/2015','$600000',4);
+insert into account values(104,'saving','2/23/2014','$400000',4);
+insert into account values(105,'saving','2/23/2017','$2789000',2);
+insert into account values(106,'current','2/23/2018','$207870',2);
+insert into account values(107,'cuurent','2/23/2019','$3400000',3);
+insert into account values(108,'saving','2/23/2014','$2024000',2);
+
+
+i. Write a function to display the number of accounts whose opening date is before’03/07/2015’.
+declare
+n int;
+begin
+select count(ano) into n from account where odate<’’03/07/2015’’;
+raise notice’’%’’,n;
+return null;
+end;’
+language ‘plpgsql’;
+
+ii. Write a cursor to display the account details of all customers from “Pune” city. 
+create or replace function f() returns text as’
+declare
+a account%rowtype;
+c1 cursor for select * from account,customer where account.cno=customer.cno and city=’’pune’’;
+begin
+for a in c1
+loop
+raise notice’’% % % % %’’,a.ano,a.type,a.odate,a.balance,a.cno;
+end loop;
+return null;
+end;’
+language ‘plpgsql’;
+
+iii. Write a trigger before deleting an account record from Account table. Raise a notice and display the message “Account record is being deleted.” 
+create or replace function sg() returns opaque as' 
+begin
+raise exception ''account  RECORD IS being  DELETED'';
+return new;
+end;'
+language 'plpgsql';
+
+create trigger sg
+before delete on account
+for each row
+execute procedure sg();
