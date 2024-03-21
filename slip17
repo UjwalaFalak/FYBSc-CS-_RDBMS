@@ -1,0 +1,73 @@
+Consider the following database 
+Student (Roll_No int, Sname varchar (20), Sclass char (10)) 
+Teacher (T_No int, Tname char (20), Experience int) 
+Student and Teacher are related with many to many relationship with the descriptive attribute Subject
+create table student(rollno int primary key,name text,add varchar(30),class text);
+
+create table teacher(tno int primary key,tname text,exp int);
+
+Create table ST(rollno int references student(rollno),tno int references teacher(tno),subject varchar(30))
+
+insert into student values(101,'Pratik','FY','Pune');
+insert into student values(102,'Harshal','FY','Pune');
+insert into student values(103,'Suresh','SY','Pune');
+insert into student values(104,'Ramesh','SY','Mumbai');
+insert into student values(105,'Jayesh','SY','Mumbai');
+insert into student values(106,'Rakesh','SY','Mumbai');
+
+insert into teacher values(1,’Mr.Patil’,15);
+
+insert into ST values(101,01,'DS');
+insert into ST values(102,01,'DBMS');
+insert into ST values(103,01,'RDBMS');
+
+i. Write a trigger before insert the record of the student in the Student table. If the Roll_No is less than or equal to zero then the trigger gets fired and displays the message “Invalid Roll Number”. 
+create or replace function roll_fun()
+returns opaque as'
+begin 
+if (new.roll no < =0 ) then
+raise exception ''Invalid Roll Number'';
+end if;
+return new;
+end;'
+language 'plpgsql';
+
+create trigger trig_exp
+before insert on student
+for each row
+execute procedure roll_fun();
+
+ii. Write a cursor to accept the student's name from the user as an input and display names of all teachers teaching that student. 
+create or replace function teach_nm(text)
+returns  text as'
+declare 
+stud_name alias for $1;
+teacher_nm text;
+c1 cursor for select distinct(tname) from teacher,student,stuteach where teacher.tno=stuteach.tno and stuteach.sno=student.sno and sname=stud_name;
+begin
+open c1;
+loop
+fetch c1 into teacher_nm ;
+exit when not found;
+raise notice ''% '',teacher_nm;
+end loop;
+close c1;
+return null;
+end;'
+language 'plpgsql';
+ O/P:-
+select teach_nm('ram');
+
+iii. Write a stored function to count the number of teachers having experience > 10 years 
+create or replace function exp() returns text as’
+declare
+cnt int;
+c1 cursor for select into cnt from teacher where exp>10;
+begin
+for cnt in c1
+loop
+raise notice ‘’%d’’,cnt;
+end loop;
+return null;
+end;’
+language’plpgsql’;
