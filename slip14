@@ -1,0 +1,44 @@
+Consider the following Customer- Account database. 
+Customer (cno integer, cname varchar(20), city varchar(20)) 
+Account (accno integer, acc_type varchar(10), opening_date date, balance money) 
+Customer and Account are related with a one to many relationship 
+i. Write a function to accept account type as input and give the maximum account balance of that type. 
+create or replace function fun(text) returns test as’
+declare
+cnt int;
+begin
+select count(*) into cnt from account where atype=$1;
+return cnt;
+end;’
+language ‘plpgsql’;
+
+ii. Write a cursor to display account details of all customers of “Pune” city. 
+create or replace function f() return text as’
+declare
+a account%rowtype;
+c1 cursor for select * from account ,customer where account.ano=customer.ano and city=’’pune’’;
+begin
+for a in c1
+loop
+raise notice’’% % % % %’’,a.ano,a.atype,a.odate,a.balance,a.cno;
+end loop;
+return null;
+end;’
+language ‘plpgsql’;
+
+iii. Write a trigger before inserting an account record in Account table and raise exception if balance is <500. 
+create or replace function a()
+returns opaque as'
+begin
+if(new.balance<=500::money) then
+raise exception''balance should be greater than 500'';
+end if;
+return new;
+end;'
+language 'plpgsql';
+
+create trigger trig_a
+before insert on account
+for each row
+execute procedure a();
+
