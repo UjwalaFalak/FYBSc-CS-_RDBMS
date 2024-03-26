@@ -1,3 +1,7 @@
+iii. Write a trigger which is executed whenever update is made to
+the account table. If the balance becomes less than 1000, print an
+error message that balance cannot be less than 1000.
+
 create table movies(m_name varchar(25) primary key,release_year int,budget money);
 
 insert into movies values('Aatma',2013,93000);
