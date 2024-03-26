@@ -1,3 +1,8 @@
+Consider the following database
+Customer (cno integer, cname varchar(20), city varchar(20))
+Account (a_no int, a_type varchar(10), opening_date date, balance money)
+Customer and Account are related with one to many relationship
+
 [root@localhost ~]# su postgres
 bash-4.4$ createdb slip5_db;
 could not change directory to "/root": Permission denied
@@ -56,7 +61,7 @@ slip5_db=# select * from account;
  106 | saving  | 2013-01-09 |  $30,000.00 |   4
 (6 rows)
 
-
+i. Write a function which accepts account no as input and prints the details of that account.
 create or replace function acc_details(int) returns text as'
 declare 
 r account%rowtype;
@@ -67,7 +72,9 @@ return null;
 end;'
 language 'plpgsql';
 
-
+ii. Write a function using cursor which accepts customer name and
+prints all account details of that customer. If the customer name
+is invalid, print appropriate message.
 create or replace function cust_info(text) returns text as'
 declare 
 r customer%rowtype;
@@ -89,6 +96,9 @@ end;'
 language 'plpgsql';
 
 
+iii. Write a trigger which is executed whenever update is made to
+the account table. If the balance becomes less than 1000, print an
+error message that balance cannot be less than 1000.
 
 create or replace function f_t() returns opaque as'
 begin
