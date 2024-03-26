@@ -1,3 +1,7 @@
+Consider the following database
+Bus (bus_no int , capacity int , depot_name varchar(20))
+Route (route_no int, source varchar(20), destination varchar(20), No_of_stations int)
+Bus and Route are related with many to many relationship.
 bash-4.4$ createdb slip2;
 bash-4.4$ psql slip2;
 
