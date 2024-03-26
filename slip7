@@ -1,3 +1,7 @@
+Consider the following database
+Employee (e_no int, e_name varchar(30), age int, date_of joining date)
+Project(p_no int, p_name varchar (25), start_date date, status varchar(10))
+Employee and project are related with many to one relationship
 create table Project(p_no int primary key, p_name varchar (25), start_date date, status varchar(10));
 
 create table Employee (e_no int unique , e_name varchar(30), age int, date_of_joining date,p_no int references Project(p_no));
