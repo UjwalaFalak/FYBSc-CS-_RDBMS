@@ -7,7 +7,7 @@ create or replace function fun(text) returns test as’
 declare
 cnt int;
 begin
-select count(*) into cnt from account where atype=$1;
+select max(*) into cnt from account where atype=$1;
 return cnt;
 end;’
 language ‘plpgsql’;
