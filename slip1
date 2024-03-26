@@ -1,3 +1,8 @@
+Consider the following database
+Student (roll_no integer, name varchar(30), address varchar(50), class varchar(10))
+Subject (scode varchar(10), subject_name varchar(20))
+Student-Subject are related with M-M relationship with attributes marks_scored.
+
 [root@localhost RDBMS]# su postgres
 bash-4.4$ createdb slip1_db;
 bash-4.4$ psql slip1_db;
@@ -79,7 +84,8 @@ slip1_db=# select * from stud_sub;
    5 |   101 |    60
 (8 rows)
 
-Q2:
+ii.Write a function using cursor which will accept the name of the subject and print the roll_no, name and marks of all students for
+that subject.
 create or replace function info(text) returns text as'
 declare
 rn int;
@@ -99,7 +105,9 @@ return null;
 end;'
 language 'plpgsql';
 
-Q3.
+iii. Write a trigger which is executed when insertion is made in the student-subject table. If marks_scored is less than 0, give
+appropriate message and do not allow the insertion.
+
 create or replace function f_t() returns opaque as'
 begin
 if(new.marks<0) then
@@ -113,7 +121,7 @@ create trigger t_f before insert on stud_sub
 for each row
 execute  procedure f_t();
 
-Q1
+i. Write a function which will accept the roll no and print all the details of that student.
 create or replace function stud_details(int) returns text as'
 declare
 r student%rowtype;
