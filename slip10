@@ -1,6 +1,9 @@
 slip no 10/slip 1 database is same
-
-Q1.
+Consider the following Student-Subject database
+Student (rollno integer, name varchar(30),city varchar(50),class varchar(10))
+Subject (scode varchar(10),subject_name varchar(20))
+Student-Subject :M-M relationship with descriptive attribute marks_scored.
+Q1. Write a function to accept student name as input and displays details of that student.
 create or replace function stud_details(text) returns text as'
 declare
 r student%rowtype;
@@ -11,7 +14,7 @@ return null;
 end;'
 language 'plpgsql';
 
-Q2.
+Q2. Write a cursor to display the names of students who have taken subject ___.
 create or replace function info(text) returns text as'
 declare
 nm text;
@@ -29,7 +32,7 @@ return null;
 end;'
 language 'plpgsql';
 
-Q3:
+Q3:Write a trigger which will prevent deleting students from ‘Pune’ city.
 create or replace function f_t1() returns opaque as'
 begin
 if(new.add=''nigdi'') then
