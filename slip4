@@ -1,6 +1,7 @@
+Consider the following database
 Movie (m_name varchar (25), release_year integer, budget money)
 Actor (a_name varchar(30), role varchar(30), charges money, a_address varchar(30) )
-Movie and actors are related with many to many relationships.
+Movie and Actor are related with many to many relationship.
 
 Q 2) A Create the above database in PostGreSQL and insert sufficient records.
 
