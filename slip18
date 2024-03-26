@@ -23,3 +23,15 @@ execute procedure exp ();
 ii. Write a cursor to accept the student name from the user as an input and give list of subjects taken by the student. 
 
 iii. Write a stored function to find the details of the maximum experienced teacher. 
+create or replace function f_c() returns int as'
+declare
+r teacher%rowtype;
+begin
+select * into r from teacher where exp=(select max(exp) from teacher);
+raise notice ''% % %'',r.tno,r.tname,r.exp;
+return null;
+end;'
+language 'plpgsql';
+
+
+
