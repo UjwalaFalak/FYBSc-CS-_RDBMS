@@ -1,3 +1,13 @@
+Consider the following database
+Teacher( t_no int, t_name varchar(20), age int, yr_experience int)
+Subject (s_no int, s_name varchar(15))
+Teacher and Subject are related with many to many relationship
+i. Write a function which will display the details of the teacher
+having maximum experience.
+
+
+ii. Write a stored function using cursor which will accept the subject name and print the names of all teachers teaching that
+subject.
 create or replace function s_t(text) returns text as'
 declare
 nm text;
@@ -14,6 +24,7 @@ return null;
 end;'
 language 'plpgsql';
 ******************************************************
+iii. Write a trigger before insert/update on Teacher table. Age should not be < 21. Print an appropriate message.
 create or replace function t_f() returns opaque as'
 begin
 if(new.age<21)then
