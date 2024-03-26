@@ -17,8 +17,31 @@ insert into proj_emp values(101,2000,'05/30/2012');
 
 i. Write a stored function to accept empno as an input parameter from the user and count the number of projects of a given employee. 
 Raise an exception if the employee number is invalid. 
+create or replace function f_info(int) returns int as'
+declare
+cnt int;
+begin
+select count(*) into cnt from employee,project where employee.empno=proj_emp.empno and project.pno=proj_emp.pno and empno=$1;
+raise notice''%'',cnt;
+return cnt;
+end;'
+language 'plpgsql';
 
 ii. Write a trigger before insert/update on project table. Raise an exception if duration is <=0. 
+create or replace function f_t() returns opaque as'
+begin
+if(new.duration<=0)then
+raise exception''Duration should be grater than 0'';
+end if;
+return new;
+end;'
+language 'plpgsql';
+
+
+create trigger t_f before insert or update on project
+for each row
+excecute procedure f_t();
+
 
 iii. Write a cursor to accept the project name as an input parameter from the user and display the names of employees working on that 
 project. 
