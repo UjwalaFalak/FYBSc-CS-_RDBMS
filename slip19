@@ -16,7 +16,32 @@ create table proj_emp(pno integer references project(pno),eno integer references
 insert into proj_emp values(101,2000,'05/30/2012');
 
 i. Write a cursor to accept the employee name as an input parameter and displays the names of projects of that employee. 
+create or replace function f_info(text) returns test as'
+declare
+pnm text;
+begin
+select pname into pnm from project,employee,proj_emp where employee.empno=proj.empno and project.pno=proj_emp.pno and ename=$1;
+raise notice''%'',pnm;
+return null;
+end;'
+language'plpgsql';
 
 ii. Write a stored function to count all employees who have joined before ‘01/02/2010’. 
+create or replace function f_c() returns int as'
+declare
+cnt int;
+c1 cursor for select count(*) from employee where JOINDATE<''01/02/2010'';
+begin
+open c1;
+loop
+fetch c1 into cnt;
+exit when not found;
+raise notice''%'',cnt;
+end loop;
+clode c1;
+return null;
+end;'
+language'plpgsql';
+
 
 iii. Write a trigger which ensures that if an employee's salary entered less than zero, the trigger gets fired. 
